@@ -6,6 +6,14 @@ provider:
   name: aws
   runtime: nodejs18.x
   profile: serverlessUser
+  environment:
+    tableName: ${self:custom.tableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: "*"
+
 
 package:
   individually: true
@@ -27,13 +35,20 @@ custom:
 
 functions:
   getUser:
-    handler: lambdas/getUser.handler
+    handler: lambdas/endpoints/getUser.handler
     events:
       - httpApi:
           path: /get-user/{ID}
           method: GET
           cors: true
-
+  getPlayerScore:
+    handler: lambdas/endpoints/getPlayerScore.handler
+    events:
+      - httpApi:
+          path: /get-user-score/{ID}
+          method: GET
+          cors: true
+  
 resources:
   Resources:
     DemoBucketUpload:
