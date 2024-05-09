@@ -1,0 +1,41 @@
+service: aws-learning
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: serverlessUser
+
+package:
+  individually: true
+  exclude:
+    - .git/**
+    - node_modules/**
+    - .venv/**
+
+plugins:
+  - serverless-s3-sync
+  - serverless-webpack
+  
+
+custom:
+  s3Sync:
+    - bucketName: myserverlessprojectuploadbucket-001001
+      localDir: UploadData
+
+functions:
+  getUser:
+    handler: lambdas/getUser.handler
+    events:
+      - httpApi:
+          path: /get-user/{ID}
+          method: GET
+          cors: true
+
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: myserverlessprojectuploadbucket-001001
