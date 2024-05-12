@@ -73,6 +73,18 @@ functions:
           method: GET
           cors: true
 
+  proxy:
+    handler: lambdas/endpoints/proxy.handler
+    events:
+      - httpApi:
+          path: /chuck-norris/{proxy+}
+          method: ANY
+          integration: http-proxy
+          request:
+            uri: http://url/{proxy} # proxy path
+            parameters:
+              paths:
+                proxy: true
 
 resources:
   Resources:
