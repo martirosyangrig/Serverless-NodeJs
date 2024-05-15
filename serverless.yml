@@ -14,6 +14,8 @@ provider:
       Action:
         - dynamodb:*
         - s3:*
+        - sns:SetSMSAttributes
+        - sns:Publish
       Resource: "*"
 
 
@@ -72,7 +74,13 @@ functions:
           path: /get-file/{fileName}
           method: GET
           cors: true
-
+  sendSMS:
+    handler: lambdas/endpoints/sendSMS.handler
+    events:
+      - httpApi:
+          path: /send-sms
+          method: POST
+          cors: true
   proxy:
     handler: lambdas/endpoints/proxy.handler
     events:
@@ -117,3 +125,4 @@ resources:
                   - apigateway.amazonaws.com
               Action:
                 - 'sts:AssumeRole'
+    
