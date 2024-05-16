@@ -16,6 +16,7 @@ provider:
         - s3:*
         - sns:SetSMSAttributes
         - sns:Publish
+        - ses:*
       Resource: "*"
 
 
@@ -81,6 +82,14 @@ functions:
           path: /send-sms
           method: POST
           cors: true
+  sendReminder:
+    handler: lambdas/scheduleTasks/reminderEmail.handler
+    events:
+      - schedule: cron(0 9 ? * 7 *)
+  sendMorningNews:
+    handler: lambdas/scheduleTasks/morningNews.handler
+    events:
+      - schedule: cron(15 7 ? * * *)
   proxy:
     handler: lambdas/endpoints/proxy.handler
     events:
@@ -125,4 +134,3 @@ resources:
                   - apigateway.amazonaws.com
               Action:
                 - 'sts:AssumeRole'
-    
