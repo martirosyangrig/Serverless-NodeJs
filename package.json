@@ -17,5 +17,8 @@
     "serverless-webpack": "^5.13.0",
     "webpack": "^5.91.0",
     "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "serverless-offline": "^13.5.0"
   }
 }

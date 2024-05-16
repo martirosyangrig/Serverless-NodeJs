@@ -30,7 +30,7 @@ package:
 plugins:
   - serverless-s3-sync
   - serverless-webpack
-
+  - serverless-offline
 
 custom:
   tableName: player-points
