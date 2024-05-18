@@ -14,7 +14,9 @@ const Dynamo = {
         const data = await documentClient.get(params).promise();
 
         if (!data || !data.Item) {
-            throw Error(`There was an error fetching the data for ID od ${ID} from ${TableName}`);
+            throw Error(
+                `There was an error fetching the data for ID od ${ID} from ${TableName}`
+            );
         }
 
         console.log(data);
@@ -34,11 +36,31 @@ const Dynamo = {
         const res = await documentClient.put(params).promise();
 
         if (!res) {
-            throw Error(`There was an error inserting for ID of ${data.ID} in table ${TableName}`);
+            throw Error(
+                `There was an error inserting for ID of ${data.ID} in table ${TableName}`
+            );
         }
 
         return data;
-    }
+    },
+    async update(
+        tableName,
+        primaryKey,
+        primarykeyValue,
+        updateKey,
+        updateValue
+    ) {
+        const params = {
+            TableName: tableName,
+            Key: { [primaryKey]: primarykeyValue },
+            UpdateExpression: `set ${updateKey} = :updateValue`,
+            ExpressionAttributeValues: {
+                ":updateValue": updateValue,
+            },
+        };
+
+        return documentClient.update(params).promise();
+    },
 };
 
 module.exports = Dynamo;
