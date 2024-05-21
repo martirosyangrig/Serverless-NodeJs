@@ -6,9 +6,12 @@ provider:
   name: aws
   runtime: nodejs18.x
   profile: serverlessUser
+  region: ${self:custom.region} 
   environment:
     tableName: ${self:custom.tableName}
     bucketName: ${self:custom.bucketName}
+    imageUploadBucket: ${self:custom.imageUploadBucket}
+    region: ${self:custom.region}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -28,16 +31,14 @@ package:
     - .venv/**
 
 plugins:
-  - serverless-s3-sync
   - serverless-webpack
   - serverless-offline
 
 custom:
   tableName: player-points
   bucketName: myserverlessprojectuploadbucket-001001
-  s3Sync:
-    - bucketName: ${self:custom.bucketName}
-      localDir: UploadData
+  imageUploadBucket: myimageuploadbucketaws-00100100888
+  region: us-east-1
 
 functions:
   getUser:
@@ -104,6 +105,13 @@ functions:
     handler: lambdas/scheduleTasks/morningNews.handler
     events:
       - schedule: cron(15 7 ? * * *)
+  imageUpload:
+    handler: lambdas/endpoints/imageUpload.handler
+    events:
+      - httpApi:
+          path: /upload-image
+          method: POST
+          cors: true
   proxy:
     handler: lambdas/endpoints/proxy.handler
     events:
@@ -123,6 +131,18 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.bucketName}
+    ImageUploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.imageUploadBucket}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          IgnorePublicAcls: false
+          BlockPublicPolicy: false
+          RestrictPublicBuckets: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
     MyDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
